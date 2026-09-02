@@ -1,0 +1,2 @@
+class GridScriptError(Exception):
+    pass
