@@ -8,9 +8,10 @@ Built for the CSC4207 (Organization of Programming Languages) group project.
 ```
 gridscript/
 ├── gridscript.py        # CLI: run .gsc files (also: --tokens, --ast)
-├── run_tests.py         # test runner (stdlib only)
+├── run_tests.py         # integration test runner (stdlib only)
+├── test_interpreter.py  # unit test suite: lexer, parser, interpreter
 ├── src/
-│   ├── ast_nodes.py     # AST node classes
+│   ├── ast_nodes.py     # AST node dataclasses
 │   ├── lexer.py         # tokenizer (regular expressions -> tokens)
 │   ├── parser.py        # recursive descent parser (BNF -> AST)
 │   ├── environment.py   # lexical scope chains
@@ -20,7 +21,9 @@ gridscript/
 ├── tests/
 │   ├── valid/           # programs that must run + .expected output
 │   └── invalid/         # programs that must fail + .error substring
-└── examples/            # longer example scripts
+├── examples/            # longer example scripts
+├── report/              # screenshots for the written report
+└── tools/               # dev-only scripts (screenshot generators)
 ```
 
 ## Requirements
@@ -63,6 +66,6 @@ end
   the *current* scope only; reads resolve outward lexically. Assignment inside a
   function can never clobber a global (it shadows).
 - **Operators**: `+ - * /` (numbers), `+` (string concat), `< >` (numbers),
-  `== !=` (any same-type values; different types are `false`).
+  `== !=` (any same-type values; different types compare `false`).
 - **Conditions** must be Boolean (`if 5 then ...` is a run-time `TypeError`).
 - **Comments**: `//` to end of line.

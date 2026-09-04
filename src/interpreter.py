@@ -1,7 +1,3 @@
-from src.ast_nodes import (
-    Program, Assign, Print, If, While, FunctionDef, Return,
-    Call, BinaryOp, UnaryOp, Literal, Variable,
-)
 from src.environment import Environment
 from src.builtins import make_builtins
 from src.errors import GridScriptError
@@ -15,7 +11,7 @@ class ReturnException(Exception):
 class Interpreter:
     def __init__(self):
         self.env = Environment()
-        builtins = make_builtins(self)
+        builtins = make_builtins()
         for name, fn in builtins.items():
             self.env.set(name, fn)
 
@@ -42,14 +38,7 @@ class Interpreter:
 
     def visit_Print(self, node):
         value = self.visit(node.expr)
-        if isinstance(value, bool):
-            print(str(value).lower())
-        elif isinstance(value, int):
-            print(value)
-        elif isinstance(value, str):
-            print(value)
-        else:
-            print(value)
+        print(str(value).lower() if isinstance(value, bool) else value)
         return value
 
     def visit_If(self, node):

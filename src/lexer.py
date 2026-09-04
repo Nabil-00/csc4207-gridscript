@@ -1,30 +1,21 @@
+from typing import NamedTuple
+
+
 KEYWORDS = {
     'set', 'if', 'then', 'else', 'end', 'while', 'do',
     'def', 'return', 'print', 'true', 'false',
 }
 
-TOKEN_NAMES = {
-    'KEYWORD': 'KEYWORD',
-    'IDENT': 'IDENT',
-    'NUMBER': 'NUMBER',
-    'STRING': 'STRING',
-    'OP': 'OP',
-    'LPAREN': 'LPAREN',
-    'RPAREN': 'RPAREN',
-    'COMMA': 'COMMA',
-    'EOF': 'EOF',
-}
+SINGLE_CHARS = {'(': 'LPAREN', ')': 'RPAREN', ',': 'COMMA'}
+
+TWO_CHAR_OPS = ('==', '!=', '<=', '>=')
 
 
-class Token:
-    def __init__(self, type_, value, line, column):
-        self.type = type_
-        self.value = value
-        self.line = line
-        self.column = column
-
-    def __repr__(self):
-        return f"Token({self.type}, {self.value!r})"
+class Token(NamedTuple):
+    type: str
+    value: str
+    line: int
+    column: int
 
 
 class LexerError(Exception):
@@ -43,9 +34,7 @@ class Lexer:
         raise LexerError(f"{self.filename}:{self.line}:{self.col}: {msg}")
 
     def peek(self):
-        if self.pos >= len(self.source):
-            return '\0'
-        return self.source[self.pos]
+        return self.source[self.pos] if self.pos < len(self.source) else '\0'
 
     def advance(self):
         ch = self.source[self.pos]
@@ -57,23 +46,9 @@ class Lexer:
             self.col += 1
         return ch
 
-    def skip_whitespace(self):
-        while self.peek() in (' ', '\t', '\n', '\r'):
-            self.advance()
-
-    def skip_comment(self):
-        while self.peek() not in ('\n', '\0'):
-            self.advance()
-
-    def read_number(self):
+    def read_while(self, predicate):
         start = self.pos
-        while self.peek().isdigit():
-            self.advance()
-        return self.source[start:self.pos]
-
-    def read_identifier(self):
-        start = self.pos
-        while self.peek().isalnum() or self.peek() == '_':
+        while predicate(self.peek()):
             self.advance()
         return self.source[start:self.pos]
 
@@ -93,65 +68,39 @@ class Lexer:
     def tokenize(self):
         tokens = []
         while self.pos < len(self.source):
-            self.skip_whitespace()
+            self.read_while(str.isspace)
             if self.pos >= len(self.source):
                 break
 
             ch = self.peek()
-            line = self.line
-            col = self.col
+            line, col = self.line, self.col
 
-            if ch == '/' and self.pos + 1 < len(self.source) and self.source[self.pos + 1] == '/':
-                self.skip_comment()
+            if self.source[self.pos:self.pos + 2] == '//':
+                self.read_while(lambda c: c != '\n')
                 continue
-
             if ch.isdigit():
-                num = self.read_number()
-                tokens.append(Token('NUMBER', num, line, col))
-                continue
-
-            if ch.isalpha() or ch == '_':
-                ident = self.read_identifier()
-                if ident in KEYWORDS:
-                    tokens.append(Token('KEYWORD', ident, line, col))
-                else:
-                    tokens.append(Token('IDENT', ident, line, col))
-                continue
-
-            if ch == '"':
-                s = self.read_string()
-                tokens.append(Token('STRING', f'"{s}"', line, col))
-                continue
-
-            if ch == '(':
+                tokens.append(Token('NUMBER', self.read_while(str.isdigit), line, col))
+            elif ch.isalpha() or ch == '_':
+                word = self.read_while(lambda c: c.isalnum() or c == '_')
+                tokens.append(Token('KEYWORD' if word in KEYWORDS else 'IDENT', word, line, col))
+            elif ch == '"':
+                tokens.append(Token('STRING', f'"{self.read_string()}"', line, col))
+            elif ch in SINGLE_CHARS:
                 self.advance()
-                tokens.append(Token('LPAREN', '(', line, col))
-                continue
-
-            if ch == ')':
-                self.advance()
-                tokens.append(Token('RPAREN', ')', line, col))
-                continue
-
-            if ch == ',':
-                self.advance()
-                tokens.append(Token('COMMA', ',', line, col))
-                continue
-
-            if ch in '=!<>+-*/':
-                two_char = self.source[self.pos:self.pos + 2]
-                if two_char in ('==', '!=', '<=', '>='):
-                    if two_char in ('<=', '>='):
-                        self.error(f"operator '{two_char}' is not supported (use < or > only)")
+                tokens.append(Token(SINGLE_CHARS[ch], ch, line, col))
+            elif ch in '=!<>+-*/':
+                two = self.source[self.pos:self.pos + 2]
+                if two in ('<=', '>='):
+                    self.error(f"operator '{two}' is not supported (use < or > only)")
+                if two in TWO_CHAR_OPS:
                     self.advance()
                     self.advance()
-                    tokens.append(Token('OP', two_char, line, col))
+                    tokens.append(Token('OP', two, line, col))
                 else:
                     self.advance()
                     tokens.append(Token('OP', ch, line, col))
-                continue
-
-            self.error(f"unexpected character '{ch}'")
+            else:
+                self.error(f"unexpected character '{ch}'")
 
         tokens.append(Token('EOF', None, self.line, self.col))
         return tokens

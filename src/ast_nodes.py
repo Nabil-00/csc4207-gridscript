@@ -1,104 +1,72 @@
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass
 class Program:
-    def __init__(self, statements):
-        self.statements = statements
-
-    def __repr__(self):
-        return f"Program({self.statements})"
+    statements: list
 
 
+@dataclass
 class Assign:
-    def __init__(self, name, expr):
-        self.name = name
-        self.expr = expr
-
-    def __repr__(self):
-        return f"Assign({self.name}, {self.expr})"
+    name: str
+    expr: Any
 
 
+@dataclass
 class Print:
-    def __init__(self, expr):
-        self.expr = expr
-
-    def __repr__(self):
-        return f"Print({self.expr})"
+    expr: Any
 
 
+@dataclass
 class If:
-    def __init__(self, condition, then_body, else_body):
-        self.condition = condition
-        self.then_body = then_body
-        self.else_body = else_body
-
-    def __repr__(self):
-        return f"If({self.condition}, {self.then_body}, {self.else_body})"
+    condition: Any
+    then_body: list
+    else_body: list
 
 
+@dataclass
 class While:
-    def __init__(self, condition, body):
-        self.condition = condition
-        self.body = body
-
-    def __repr__(self):
-        return f"While({self.condition}, {self.body})"
+    condition: Any
+    body: list
 
 
+@dataclass
 class FunctionDef:
-    def __init__(self, name, params, body):
-        self.name = name
-        self.params = params
-        self.body = body
-
-    def __repr__(self):
-        return f"FunctionDef({self.name}, {self.params}, {self.body})"
+    name: str
+    params: list
+    body: list
 
 
+@dataclass
 class Return:
-    def __init__(self, expr):
-        self.expr = expr
-
-    def __repr__(self):
-        return f"Return({self.expr})"
+    expr: Any
 
 
+@dataclass
 class Call:
-    def __init__(self, name, args):
-        self.name = name
-        self.args = args
-
-    def __repr__(self):
-        return f"Call({self.name}, {self.args})"
+    name: str
+    args: list
 
 
+@dataclass
 class BinaryOp:
-    def __init__(self, op, left, right):
-        self.op = op
-        self.left = left
-        self.right = right
-
-    def __repr__(self):
-        return f"BinaryOp({self.op}, {self.left}, {self.right})"
+    op: str
+    left: Any
+    right: Any
 
 
+@dataclass
 class UnaryOp:
-    def __init__(self, op, operand):
-        self.op = op
-        self.operand = operand
-
-    def __repr__(self):
-        return f"UnaryOp({self.op}, {self.operand})"
+    op: str
+    operand: Any
 
 
+@dataclass
 class Literal:
-    def __init__(self, value):
-        self.value = value
-
-    def __repr__(self):
-        return f"Literal({self.value!r})"
+    value: Any
 
 
+@dataclass
 class Variable:
-    def __init__(self, name):
-        self.name = name
-
-    def __repr__(self):
-        return f"Variable({self.name})"
+    name: str

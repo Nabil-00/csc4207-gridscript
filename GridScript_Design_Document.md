@@ -1,10 +1,10 @@
-# CSC4207 Group Project — Design Document
+# CSC4207 group project design document
 
 ## GridScript: a scripting language for a 2D game actor
 
 | | |
 |---|---|
-| **Course** | CSC 4207 — Organization of Programming Languages |
+| **Course** | CSC 4207 (Organization of Programming Languages) |
 | **Group name / number** | *(fill in)* |
 | **Members & reg. numbers** | *(fill in)* |
 | **Submission** | *(one email, zipped, to salisu.abdul@kustwudil.edu.ng)* |
@@ -61,8 +61,8 @@ Notes:
   deliberately absent, so `>` then `=` is a syntax error rather than an accident.
 - **Keyword vs identifier**: lexed as `IDENT` first, then looked up in the keyword
   table; this keeps the DFA small (one letter pattern) and the keywords table-driven.
-- **Important correction**: the number pattern is `[0-9]+`. An earlier draft used
-  `[1-3]+`, which would silently reject numbers such as `100` and `25`.
+- **Numbers**: the pattern `[0-9]+` accepts multi-digit integers such as `100`
+  and `25`.
 
 ---
 
@@ -109,8 +109,7 @@ Grammar design notes:
 - **A single (optional) comparison**, not a chain, avoids nonsense such as
   `1 < 2 < 3`.
 - **`ArgList` / `ParamList` are comma-separated lists** and may be empty, so both
-  `scale(2, 3)` and `turn_left()` parse. (An earlier draft allowed at most one
-  argument.)
+  `scale(2, 3)` and `turn_left()` parse.
 - The grammar is LL(1)-friendly and is parsed by **recursive descent**: one
   function per non-terminal, with one-token lookahead to pick between `IDENT`
   (variable reference), `IDENT "("` (call), and literal tokens.
@@ -140,8 +139,8 @@ Dynamic typing rules for operators (checked at run time, else a `TypeError`):
 
 Division by zero is a run-time error. `if`/`while` conditions must evaluate to a
 Boolean; anything else is a run-time `TypeError` (`if 5 then …` is rejected). We do
-not coerce numbers to booleans, which keeps the typing story simple to state and to
-test — and it gives us a ready-made invalid test case.
+not coerce numbers to booleans, which keeps the typing rules simple to state and
+to test, and it gives us a ready-made invalid test case.
 
 ---
 
@@ -150,7 +149,7 @@ test — and it gives us a ready-made invalid test case.
 **Only function calls create new scopes.** `if`/`while` bodies execute in the
 environment of the surrounding code (no block scoping). Three rules:
 
-1. `set x = e` **always binds/updates `x` in the current environment** — it never
+1. `set x = e` **always binds/updates `x` in the current environment**; it never
    reaches into an outer scope.
 2. Reading a name resolves it **lexically**: current environment first, then its
    enclosing environments, out to the global environment.
@@ -167,7 +166,7 @@ Consequences that are easy to state, implement, and test:
   back through `return`.
 
 **Why static (lexical) scoping?** Because a function's meaning can be understood
-from its text alone — you read `def f(x) … end` and know exactly which `x` it means
+from its text alone: you read `def f(x) … end` and know which `x` it means
 without tracing call history. Dynamic scoping would make the same function behave
 differently depending on who called it, which for a game-script language would make
 actors behave unpredictably. It also matches the course material on names and
@@ -177,8 +176,8 @@ binding, where we can explain environment chains and shadowing concretely.
 health as a number one moment and an item name as a string the next. Dynamic typing
 keeps the grammar and parser small (no type annotations to parse) and pushes the
 type checks into the interpreter, where each construct has one simple run-time
-rule. The trade-off — errors surface at run time rather than before — is acceptable
-for short scripts and is exactly why the test suite includes type-error cases.
+rule. The trade-off (errors surface at run time rather than before) is acceptable
+for short scripts, and it is why the test suite includes type-error cases.
 
 ---
 
@@ -215,7 +214,7 @@ negates its operand (Number only).
 ```
 ⟨e, σ⟩ ⇓ v
 ─────────────────────────────   (declare or update x in the current
-⟨set x = e, σ⟩ ⇓ σ[x ↦ v]        environment only — see section 5)
+⟨set x = e, σ⟩ ⇓ σ[x ↦ v]        environment only; see section 5)
 ```
 
 **Output**
@@ -251,7 +250,7 @@ negates its operand (Number only).
 ```
 
 **User-defined function call.** `def f(p₁,…,pₙ) S end` binds the name `f` to a
-closure `(p₁,…,pₙ, S, σ_def)` — the parameter list, the body, and the environment
+closure `(p₁,…,pₙ, S, σ_def)`: the parameter list, the body, and the environment
 at definition time. A call creates a fresh environment whose parent is `σ_def`,
 binds each parameter to the evaluated argument, then runs the body:
 
@@ -285,7 +284,7 @@ world and demonstrate the same semantics with plain `print` scripts.
 
 ## 7. Sample programs
 
-### 7.1 Valid — patrol loop (assignment, arithmetic, loop, conditional, calls)
+### 7.1 Valid: patrol loop (assignment, arithmetic, loop, conditional, calls)
 
 ```text
 // The actor patrols, taking damage each step, until health runs out.
@@ -302,11 +301,11 @@ end
 print "patrol complete"
 ```
 
-Output: `low health` then `low health` (when health is 50 then 25), then
-`patrol complete`. At the end `health` is `0` (it never goes negative because the
-loop exits as soon as `health > 0` is false).
+Output: `low health` twice (once after health falls to 25, once after it reaches
+0), then `patrol complete`. At the end `health` is `0` (it never goes negative
+because the loop exits as soon as `health > 0` is false).
 
-### 7.2 Valid — user-defined function, parameters and `return`
+### 7.2 Valid: user-defined function, parameters and `return`
 
 ```text
 def scale(value, factor)
@@ -318,7 +317,7 @@ print scale(3, bonus)     // prints 12
 print scale(bonus, bonus) // prints 16
 ```
 
-### 7.3 Valid — static scoping / shadowing demo (use this in the report!)
+### 7.3 Valid: static scoping / shadowing demo (use this in the report!)
 
 ```text
 set x = 100
@@ -333,10 +332,10 @@ print hide()   // prints 7
 print x        // prints 100  ← global x is untouched
 ```
 
-This program proves the interpreter implements **static scoping**: the `set x = 7`
-inside `hide` cannot leak to the global `x`.
+This program shows that the interpreter implements **static scoping**: the
+`set x = 7` inside `hide` cannot leak to the global `x`.
 
-### 7.4 Valid — precedence and types
+### 7.4 Valid: precedence and types
 
 ```text
 print 2 + 3 * 4        // prints 14   (* binds tighter than +)
@@ -348,60 +347,60 @@ print 1 == 2           // prints false
 print "a" == 1         // prints false  (different types never equal)
 ```
 
-### 7.5 Invalid — syntax errors (lexer/parser must reject)
+### 7.5 Invalid: syntax errors (lexer/parser must reject)
 
 ```text
 set health = 100$
 ```
-Expected: lexer error — `unexpected character '$'`.
+Expected: lexer error, `unexpected character '$'`.
 
 ```text
 if health < 50          // missing "then"
     use_potion()
 end
 ```
-Expected: parser error — `expected 'then'`.
+Expected: parser error, `expected 'then'`.
 
 ```text
 set x = (2 + 3
 ```
-Expected: parser error — `unmatched '('` at end of input.
+Expected: parser error, `expected RPAREN` at end of input.
 
-### 7.6 Invalid — run-time errors (interpreter must reject with a clear message)
+### 7.6 Invalid: run-time errors (interpreter must reject with a clear message)
 
 ```text
 print mana            // undefined variable
 ```
-Expected: run-time error — `undefined variable 'mana'`.
+Expected: run-time error, `undefined variable 'mana'`.
 
 ```text
 print 1 / 0
 ```
-Expected: run-time error — `division by zero`.
+Expected: run-time error, `division by zero`.
 
 ```text
 if 5 then
     print "nope"
 end
 ```
-Expected: run-time `TypeError` — `if condition must be a Boolean, got Number`.
+Expected: run-time `TypeError`, `if condition must be a Boolean, got Number`.
 
 ```text
 set hp = "high"
 print hp + 100
 ```
-Expected: run-time `TypeError` — `cannot add String and Number`.
+Expected: run-time `TypeError`, `cannot add String and Number`.
 
 ---
 
 ## 8. Testing approach
 
 The test suite runs programs and checks two things: the **output** for valid
-programs (7.1–7.4) and the **error kind + message** for invalid programs (7.5–7.6).
-Tests are organised as:
+programs (7.1 to 7.4) and the **error kind and message** for invalid programs
+(7.5 to 7.6). Tests are organised as:
 
-- `tests/valid/*.gsc` — each pairs a script with an expected-output file.
-- `tests/invalid/*.gsc` — each pairs a script with an expected error line.
+- `tests/valid/*.gsc`: each pairs a script with an expected-output file.
+- `tests/invalid/*.gsc`: each pairs a script with an expected error line.
 
 Coverage checklist (ties back to the marking rubric):
 
@@ -427,19 +426,19 @@ derive them from the course material before the walkthrough videos are recorded.
 
 ---
 
-## 10. Suggested split of work (4–5 members)
+## 10. Suggested split of work (4 to 5 members)
 
 | Member | Part | Demo video shows |
 |---|---|---|
 | A | Lexer (tokens, regex, keyword table) | tokenising a sample script |
 | B | Parser (recursive descent from §3 BNF → AST) | AST dump of a sample script |
 | C | AST + environment/scope model (closures, lexical chains) | the §5 scope rules in code |
-| D | Interpreter (evaluate AST per §6 rules) + built-ins | running 7.1–7.4 |
+| D | Interpreter (evaluate AST per §6 rules) + built-ins | running 7.1 to 7.4 |
 | E | Tests (§8), sample programs, design doc & report assembly | the test suite passing |
 
-Each member's 2–3 minute video must walk through code they wrote and match the
+Each member's 2 to 3 minute video must walk through code they wrote and match the
 submitted source.
 
 ---
 
-*GridScript — CSC 4207 Group Project. Draft v2 (corrected grammar/semantics).*
+*GridScript, CSC 4207 group project.*

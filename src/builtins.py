@@ -29,19 +29,11 @@ class World:
         return 0
 
 
-BUILTIN_NAMES = {
-    'step_forward',
-    'turn_left',
-    'turn_right',
-    'use_potion',
-}
-
-
-def make_builtins(interpreter):
+def make_builtins():
     world = World()
     return {
-        'step_forward': lambda *args: world.step_forward(),
-        'turn_left': lambda *args: world.turn_left(),
-        'turn_right': lambda *args: world.turn_right(),
-        'use_potion': lambda *args: world.use_potion(),
+        'step_forward': world.step_forward,
+        'turn_left': world.turn_left,
+        'turn_right': world.turn_right,
+        'use_potion': world.use_potion,
     }
