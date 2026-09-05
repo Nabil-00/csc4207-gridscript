@@ -140,8 +140,10 @@ Dynamic typing rules for operators (checked at run time, else a `TypeError`):
 
 Division by zero is a run-time error. `if`/`while` conditions must evaluate to a
 Boolean; anything else is a run-time `TypeError` (`if 5 then …` is rejected). We do
-not coerce numbers to booleans, which keeps the typing rules simple to state and
-to test, and it gives us a ready-made invalid test case.
+not coerce numbers to booleans. That keeps the typing rules simple to state and
+to test, and it gives us a ready-made invalid test case. Booleans are not Numbers:
+`true + 1` fails with `cannot add Boolean and Number`, and `1 == true` is `false`
+because the operands have different types.
 
 ---
 
@@ -277,9 +279,10 @@ position, facing direction, health). Built-ins mutate it and return a Number:
 | `turn_left()` / `turn_right()` | change facing | `1` |
 | `use_potion()` | restore health | `1` if a potion is held, else `0` |
 
-The grid itself is optional garnish; the language core (lexer/parser/interpreter
-rules above) is where the marks are. If time runs short the group may drop the grid
-world and demonstrate the same semantics with plain `print` scripts.
+The grid world is implemented in `src/builtins.py` and keeps the actor's position,
+facing direction, health, and potion count. The language core (lexer, parser, and
+the interpreter rules above) covers the course concepts; the built-ins give
+scripts something visible to act on.
 
 ---
 
@@ -346,6 +349,8 @@ print name + " script" // prints grid script  (string concatenation)
 print 1 == 1           // prints true
 print 1 == 2           // prints false
 print "a" == 1         // prints false  (different types never equal)
+print 1 == true        // prints false  (Number and Boolean differ)
+print 1 != true        // prints true
 ```
 
 ### 7.5 Invalid: syntax errors (lexer/parser must reject)
@@ -392,6 +397,11 @@ print hp + 100
 ```
 Expected: run-time `TypeError`, `cannot add String and Number`.
 
+```text
+print true + 1
+```
+Expected: run-time `TypeError`, `cannot add Boolean and Number`.
+
 ---
 
 ## 8. Testing approach
@@ -405,24 +415,24 @@ programs (7.1 to 7.4) and the **error kind and message** for invalid programs
 
 Coverage checklist (ties back to the marking rubric):
 
-- [ ] lexer: keywords, identifiers, numbers, strings, operators, comments, errors
-- [ ] parser: precedence, optional `else`, nested `if`, empty argument lists
-- [ ] interpreter: assignment, arithmetic, strings, `if`, `while`, functions,
+- [x] lexer: keywords, identifiers, numbers, strings, operators, comments, errors
+- [x] parser: precedence, optional `else`, nested `if`, empty argument lists
+- [x] interpreter: assignment, arithmetic, strings, `if`, `while`, functions,
       `return`, recursion
-- [ ] scoping: shadowing, globals preserved (7.3), recursion frames
-- [ ] typing: valid mixed-type `==`, and each `TypeError` path
-- [ ] two or more invalid programs of each kind (syntax and run-time)
+- [x] scoping: shadowing, globals preserved (7.3), recursion frames
+- [x] typing: valid mixed-type `==`, and each `TypeError` path
+- [x] two or more invalid programs of each kind (syntax and run-time)
 
 ---
 
 ## 9. AI-use disclosure
 
 The brief permits AI tools for minor help, such as debugging an error message, but
-not for generating the grammar, semantic rules, or core code. NotebookLM was used
-to brainstorm language themes and prepare slides for an initial group meeting. AI
-assistance was also used to clarify one Python error message during development.
+not for generating the grammar, semantic rules, or core code. The group used
+NotebookLM to brainstorm language themes and prepare slides for an initial group
+meeting, plus AI help to clarify one Python error message during development.
 The group wrote and reviewed the grammar, typing and scoping rules, operational
-semantics, and core implementation.
+semantics, and core implementation itself.
 
 ---
 
