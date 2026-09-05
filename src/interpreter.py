@@ -88,9 +88,9 @@ class Interpreter:
             for p, a in zip(params, args):
                 self.env.set(p, a)
             try:
-                result = self._run_block(body)
+                self._run_block(body)
                 self.env = old_env
-                return 0 if result is None else result
+                return 0
             except ReturnException as e:
                 self.env = old_env
                 return e.value
@@ -106,56 +106,60 @@ class Interpreter:
             return 'String'
         return type(val).__name__
 
+    def _is_number(self, val):
+        """Return true for GridScript Numbers, excluding Python booleans."""
+        return isinstance(val, int) and not isinstance(val, bool)
+
     def visit_BinaryOp(self, node):
         left = self.visit(node.left)
         right = self.visit(node.right)
 
         if node.op == '+':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 return left + right
             if isinstance(left, str) and isinstance(right, str):
                 return left + right
             self.error(f"cannot add {self._type_name(left)} and {self._type_name(right)}")
 
         elif node.op == '-':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 return left - right
             self.error(f"cannot subtract {self._type_name(left)} and {self._type_name(right)}")
 
         elif node.op == '*':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 return left * right
             self.error(f"cannot multiply {self._type_name(left)} and {self._type_name(right)}")
 
         elif node.op == '/':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 if right == 0:
                     self.error("division by zero")
                 return left // right
             self.error(f"cannot divide {self._type_name(left)} and {self._type_name(right)}")
 
         elif node.op == '<':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 return left < right
             self.error(f"cannot compare {self._type_name(left)} and {self._type_name(right)} with '<'")
 
         elif node.op == '>':
-            if isinstance(left, int) and isinstance(right, int):
+            if self._is_number(left) and self._is_number(right):
                 return left > right
             self.error(f"cannot compare {self._type_name(left)} and {self._type_name(right)} with '>'")
 
         elif node.op == '==':
-            return left == right
+            return type(left) is type(right) and left == right
 
         elif node.op == '!=':
-            return left != right
+            return type(left) is not type(right) or left != right
 
         self.error(f"unknown operator '{node.op}'")
 
     def visit_UnaryOp(self, node):
         operand = self.visit(node.operand)
         if node.op == '-':
-            if not isinstance(operand, int):
+            if not self._is_number(operand):
                 self.error(f"cannot negate {self._type_name(operand)}")
             return -operand
         self.error(f"unknown unary operator '{node.op}'")

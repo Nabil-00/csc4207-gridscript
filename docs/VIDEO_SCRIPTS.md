@@ -2,7 +2,7 @@
 
 One script per project part. Each is sized for 2 to 3 minutes. Follow the
 steps in order; the numbered shots line up with the screenshots in
-`report/screenshots/`.
+`../report/screenshots/`.
 
 ## Recording setup (all members)
 
@@ -136,7 +136,7 @@ Shots:
    python3 test_interpreter.py
    ```
 4. Show the invalid tests folder: each bad program has an expected error.
-5. Show `report/screenshots/`: the same runs rendered as images for the
+5. Show `../report/screenshots/`: the same runs rendered as images for the
    written report.
 
 Say: "I built the test suite. Valid programs are checked against expected

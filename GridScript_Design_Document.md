@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | **Course** | CSC 4207 (Organization of Programming Languages) |
-| **Group name / number** | *(fill in)* |
-| **Members & reg. numbers** | *(fill in)* |
+| **Group name / number** | Group 1 |
+| **Members & reg. numbers** | Nabil Ismail Abdulkadir (UG22CSC1047); Ahmad Auwal Abubakar (UG22CSC1075); Abubakar Muhammad Sulaiman (UG22CSC1046); Rukayya Musbahu Imam (UG22CSC1040); Muhammad Salisu (UG20CSC1005) |
 | **Submission** | *(one email, zipped, to salisu.abdul@kustwudil.edu.ng)* |
 
 ---
@@ -135,7 +135,8 @@ Dynamic typing rules for operators (checked at run time, else a `TypeError`):
 | `-` `*` `/` | Number, Number | Number |
 | `<` `>` | Number, Number | Boolean |
 | `==` `!=` | any two values of the *same* type | Boolean (by value) |
-| `==` `!=` | values of different types | Boolean `false` (not an error) |
+| `==` | values of different types | Boolean `false` (not an error) |
+| `!=` | values of different types | Boolean `true` (not an error) |
 
 Division by zero is a run-time error. `if`/`while` conditions must evaluate to a
 Boolean; anything else is a run-time `TypeError` (`if 5 then …` is rejected). We do
@@ -272,7 +273,7 @@ position, facing direction, health). Built-ins mutate it and return a Number:
 
 | Built-in | Effect | Returns |
 |---|---|---|
-| `step_forward()` | move one cell in the current facing direction | `1` if moved, `0` if blocked |
+| `step_forward()` | move one cell in the current facing direction | `1` |
 | `turn_left()` / `turn_right()` | change facing | `1` |
 | `use_potion()` | restore health | `1` if a potion is held, else `0` |
 
@@ -414,30 +415,26 @@ Coverage checklist (ties back to the marking rubric):
 
 ---
 
-## 9. AI-use disclosure *(fill in honestly before submission)*
+## 9. AI-use disclosure
 
-The brief permits AI tools for minor help (e.g. debugging an error message) but not
-for generating the grammar, semantics rules, or core code. The group used
-*(describe, e.g., NotebookLM to brainstorm a theme and to draft an early sketch;
-explainer slides for the kick-off meeting)*. The grammar in section 3, the typing
-rules in section 4, the scoping rules in section 5 and the semantics in section 6
-were reviewed, corrected and owned by the group; every member must be able to
-derive them from the course material before the walkthrough videos are recorded.
+The brief permits AI tools for minor help, such as debugging an error message, but
+not for generating the grammar, semantic rules, or core code. NotebookLM was used
+to brainstorm language themes and prepare slides for an initial group meeting. AI
+assistance was also used to clarify one Python error message during development.
+The group wrote and reviewed the grammar, typing and scoping rules, operational
+semantics, and core implementation.
 
 ---
 
-## 10. Suggested split of work (4 to 5 members)
+## 10. Group contributions
 
-| Member | Part | Demo video shows |
+| Member | Contribution | Course topic |
 |---|---|---|
-| A | Lexer (tokens, regex, keyword table) | tokenising a sample script |
-| B | Parser (recursive descent from §3 BNF → AST) | AST dump of a sample script |
-| C | AST + environment/scope model (closures, lexical chains) | the §5 scope rules in code |
-| D | Interpreter (evaluate AST per §6 rules) + built-ins | running 7.1 to 7.4 |
-| E | Tests (§8), sample programs, design doc & report assembly | the test suite passing |
-
-Each member's 2 to 3 minute video must walk through code they wrote and match the
-submitted source.
+| Nabil Ismail Abdulkadir | Interpreter, built-ins, and errors | Operational semantics and type systems |
+| Ahmad Auwal Abubakar | Parser and BNF grammar | Context-free grammars |
+| Abubakar Muhammad Sulaiman | Lexer and token rules | Regular expressions and finite automata |
+| Rukayya Musbahu Imam | AST, environments, and scoping rules | Names, binding, and scoping |
+| Muhammad Salisu | Test suites, test cases, and report | Testing across all topics |
 
 ---
 

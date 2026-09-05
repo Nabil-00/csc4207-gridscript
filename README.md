@@ -1,7 +1,6 @@
 # GridScript
 
-A small interpreter for a tiny language that scripts a 2D game actor.
-Built for the CSC4207 (Organization of Programming Languages) group project.
+GridScript is a small interpreted language for scripting a 2D game actor, written in Python for the CSC4207 (Organization of Programming Languages) group project.
 
 ## Layout
 
@@ -10,20 +9,14 @@ gridscript/
 ├── gridscript.py        # CLI: run .gsc files (also: --tokens, --ast)
 ├── run_tests.py         # integration test runner (stdlib only)
 ├── test_interpreter.py  # unit test suite: lexer, parser, interpreter
-├── src/
-│   ├── ast_nodes.py     # AST node dataclasses
-│   ├── lexer.py         # tokenizer (regular expressions -> tokens)
-│   ├── parser.py        # recursive descent parser (BNF -> AST)
-│   ├── environment.py   # lexical scope chains
-│   ├── builtins.py      # grid world + built-in actor actions
-│   ├── interpreter.py   # evaluates the AST (operational semantics)
-│   └── errors.py        # shared error type
-├── tests/
-│   ├── valid/           # programs that must run + .expected output
-│   └── invalid/         # programs that must fail + .error substring
+├── GridScript_Design_Document.md  # grammar, semantics, scoping rationale
+├── DIVISION_OF_LABOR.md # who owns what, video prep guide
+├── src/                 # lexer, parser, AST, environment, interpreter
+├── tests/               # valid programs + expected output, invalid + errors
 ├── examples/            # longer example scripts
-├── report/              # screenshots for the written report
-└── tools/               # dev-only scripts (screenshot generators)
+├── report/              # report source, PDF, screenshots, evidence
+├── tools/               # dev scripts (PDF builder, screenshot generators)
+└── docs/                # video plans, scripts, study flashcards
 ```
 
 ## Requirements
@@ -60,12 +53,8 @@ end
 
 ## Language rules (summary)
 
-- **Types**: `Number` (int), `String`, `Boolean`. Dynamic typing, checked at
-  run time.
-- **Scoping**: static/lexical. Only function calls create scopes. `set` binds in
-  the *current* scope only; reads resolve outward lexically. Assignment inside a
-  function can never clobber a global (it shadows).
-- **Operators**: `+ - * /` (numbers), `+` (string concat), `< >` (numbers),
-  `== !=` (any same-type values; different types compare `false`).
-- **Conditions** must be Boolean (`if 5 then ...` is a run-time `TypeError`).
-- **Comments**: `//` to end of line.
+- Types are Number (int), String, and Boolean. Typing is dynamic and checked at run time.
+- Scoping is static (lexical). Only function calls create scopes. `set` binds in the current scope only while reads resolve outward, so an assignment inside a function shadows a global instead of overwriting it.
+- `+ - * /` work on numbers, and `+` also concatenates strings. `<` and `>` compare numbers. `==` and `!=` compare same-type values by value; across different types `==` gives `false` and `!=` gives `true`.
+- Conditions must be Boolean. `if 5 then ...` fails at run time with a `TypeError`.
+- Comments start with `//` and run to the end of the line.

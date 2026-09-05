@@ -489,6 +489,28 @@ def test_multiply_by_string():
 
 test("typing", "multiply by string rejected", test_multiply_by_string)
 
+def test_boolean_is_not_a_number_for_arithmetic():
+    assert_raises(GridScriptError, lambda: run('print true + 1'))
+
+test("typing", "rejects Boolean plus Number", test_boolean_is_not_a_number_for_arithmetic)
+
+def test_boolean_is_not_a_number_for_comparison():
+    assert_raises(GridScriptError, lambda: run('print true < 1'))
+
+test("typing", "rejects Boolean numeric comparison", test_boolean_is_not_a_number_for_comparison)
+
+def test_cross_type_equality_uses_language_types():
+    out = run('print 1 == true\nprint 1 != true')
+    assert out.strip().split('\n') == ['false', 'true']
+
+test("typing", "cross-type equality respects language types", test_cross_type_equality_uses_language_types)
+
+def test_function_without_return_evaluates_to_zero():
+    out = run('def f()\n    print 7\nend\nprint f()')
+    assert out.strip().split('\n') == ['7', '0']
+
+test("interpreter", "function without return evaluates to zero", test_function_without_return_evaluates_to_zero)
+
 
 # ============================================================
 print(f"\n{BOLD}{'='*50}")
